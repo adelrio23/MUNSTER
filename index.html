@@ -1,0 +1,1250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Munster Baseball — Record Book</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --navy: #0a1e3d;
+    --navy-mid: #122347;
+    --navy-light: #1a3060;
+    --gold: #c9a227;
+    --gold-light: #e8bb2e;
+    --white: #ffffff;
+    --off-white: #f5f5f0;
+    --gray: #888;
+    --border: #d0c090;
+  }
+
+  body {
+    font-family: 'Georgia', serif;
+    background: var(--off-white);
+    color: #111;
+    min-height: 100vh;
+  }
+
+  /* HEADER */
+  header {
+    background: var(--navy);
+    border-bottom: 4px solid var(--gold);
+    padding: 32px 24px 24px;
+    text-align: center;
+  }
+  .header-badge {
+    display: inline-block;
+    border: 3px solid var(--gold);
+    padding: 16px 40px;
+    position: relative;
+  }
+  .header-badge::before, .header-badge::after {
+    content: '';
+    display: block;
+    height: 1px;
+    background: var(--gold);
+    margin: 6px 0;
+    opacity: 0.5;
+  }
+  header .school {
+    font-size: 11px;
+    letter-spacing: 5px;
+    text-transform: uppercase;
+    color: var(--gold);
+    font-family: 'Arial', sans-serif;
+    font-weight: 700;
+  }
+  header h1 {
+    font-size: clamp(28px, 5vw, 52px);
+    color: var(--white);
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    line-height: 1;
+    margin: 8px 0 6px;
+    font-style: italic;
+  }
+  header .subtitle {
+    font-size: 12px;
+    letter-spacing: 4px;
+    color: var(--gold);
+    text-transform: uppercase;
+    font-family: 'Arial', sans-serif;
+  }
+  .header-meta {
+    margin-top: 14px;
+    color: rgba(255,255,255,0.5);
+    font-size: 11px;
+    letter-spacing: 2px;
+    font-family: 'Arial', sans-serif;
+    text-transform: uppercase;
+  }
+
+  /* BANNER STATS */
+  .banner-stats {
+    background: var(--gold);
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 0;
+  }
+  .banner-stat {
+    padding: 12px 28px;
+    text-align: center;
+    border-right: 1px solid rgba(0,0,0,0.15);
+    min-width: 140px;
+  }
+  .banner-stat:last-child { border-right: none; }
+  .banner-stat .num {
+    display: block;
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--navy);
+    font-family: 'Arial', sans-serif;
+    line-height: 1;
+  }
+  .banner-stat .lbl {
+    display: block;
+    font-size: 9px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--navy-light);
+    font-family: 'Arial', sans-serif;
+    margin-top: 3px;
+  }
+
+  /* TABS */
+  .tab-bar {
+    background: var(--navy-mid);
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0;
+    border-bottom: 3px solid var(--gold);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+  .tab-btn {
+    background: none;
+    border: none;
+    color: rgba(255,255,255,0.6);
+    font-family: 'Arial', sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    padding: 14px 18px;
+    cursor: pointer;
+    border-bottom: 3px solid transparent;
+    margin-bottom: -3px;
+    transition: color 0.2s, border-color 0.2s;
+    white-space: nowrap;
+  }
+  .tab-btn:hover { color: var(--white); }
+  .tab-btn.active {
+    color: var(--gold-light);
+    border-bottom-color: var(--gold-light);
+  }
+
+  /* CONTENT */
+  .tab-content { display: none; padding: 36px 24px 60px; max-width: 1100px; margin: 0 auto; }
+  .tab-content.active { display: block; }
+
+  /* SECTION HEADERS */
+  .section-title {
+    font-size: 13px;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    color: var(--navy);
+    font-family: 'Arial', sans-serif;
+    font-weight: 700;
+    border-bottom: 2px solid var(--gold);
+    padding-bottom: 8px;
+    margin: 36px 0 18px;
+  }
+  .section-title:first-child { margin-top: 0; }
+
+  /* RECORD GRID */
+  .record-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 16px;
+    margin-bottom: 8px;
+  }
+  .record-card {
+    background: var(--white);
+    border: 1px solid #ddd;
+    border-top: 3px solid var(--gold);
+    padding: 16px 18px;
+  }
+  .record-card .category {
+    font-size: 10px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--gray);
+    font-family: 'Arial', sans-serif;
+    margin-bottom: 10px;
+  }
+  .record-entry {
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+    padding: 5px 0;
+    border-bottom: 1px solid #f0f0f0;
+  }
+  .record-entry:last-child { border-bottom: none; }
+  .record-val {
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--navy);
+    font-family: 'Arial', sans-serif;
+    min-width: 70px;
+    line-height: 1;
+  }
+  .record-val.avg { font-size: 18px; min-width: 60px; }
+  .record-info { font-size: 13px; color: #333; line-height: 1.4; }
+  .record-info .year {
+    font-size: 11px;
+    color: var(--gray);
+    font-family: 'Arial', sans-serif;
+  }
+
+  /* HIGHLIGHT BOX */
+  .highlight-box {
+    background: var(--navy);
+    color: var(--white);
+    border-left: 4px solid var(--gold);
+    padding: 16px 20px;
+    margin-bottom: 20px;
+  }
+  .highlight-box .hl-label {
+    font-size: 10px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--gold);
+    font-family: 'Arial', sans-serif;
+    margin-bottom: 6px;
+  }
+  .highlight-box .hl-text {
+    font-size: 15px;
+    line-height: 1.5;
+  }
+
+  /* TABLES */
+  .data-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-family: 'Arial', sans-serif;
+    font-size: 13px;
+    margin-bottom: 24px;
+  }
+  .data-table thead tr {
+    background: var(--navy);
+    color: var(--gold);
+  }
+  .data-table thead th {
+    padding: 10px 14px;
+    text-align: left;
+    font-size: 10px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    font-weight: 700;
+  }
+  .data-table tbody tr {
+    border-bottom: 1px solid #e8e8e8;
+    background: var(--white);
+  }
+  .data-table tbody tr:nth-child(even) { background: #f9f7f0; }
+  .data-table tbody tr:hover { background: #f0ece0; }
+  .data-table td {
+    padding: 9px 14px;
+    vertical-align: top;
+  }
+  .data-table td.num {
+    font-weight: 700;
+    color: var(--navy);
+    font-size: 14px;
+    white-space: nowrap;
+  }
+  .champ-row { background: #fff8e6 !important; }
+  .champ-row td { font-weight: 700; }
+
+  /* LIST STYLE */
+  .award-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 8px;
+    margin-bottom: 20px;
+  }
+  .award-item {
+    background: var(--white);
+    border: 1px solid #e0e0e0;
+    padding: 10px 14px;
+    display: flex;
+    gap: 14px;
+    align-items: baseline;
+    font-family: 'Arial', sans-serif;
+    font-size: 13px;
+  }
+  .award-item .ay {
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--gold);
+    min-width: 36px;
+  }
+  .award-item .an { color: #111; }
+  .award-item .ap { font-size: 11px; color: var(--gray); margin-left: auto; }
+
+  /* CLUB TABLE */
+  .club-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 6px;
+    margin-bottom: 20px;
+  }
+  .club-item {
+    background: var(--white);
+    border: 1px solid #ddd;
+    padding: 8px 12px;
+    font-family: 'Arial', sans-serif;
+    font-size: 12px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .club-item .ci-avg {
+    font-weight: 700;
+    color: var(--navy);
+    font-size: 14px;
+  }
+  .club-item .ci-name { color: #222; }
+  .club-item .ci-year { color: var(--gray); font-size: 11px; }
+
+  /* CHAMPIONSHIP BANNER */
+  .champ-banner {
+    background: var(--navy);
+    border: 3px solid var(--gold);
+    padding: 24px 32px;
+    text-align: center;
+    margin-bottom: 24px;
+  }
+  .champ-banner .cb-title {
+    color: var(--gold);
+    font-size: 11px;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    font-family: 'Arial', sans-serif;
+    margin-bottom: 10px;
+  }
+  .champ-banner .cb-years {
+    color: var(--white);
+    font-size: 28px;
+    font-family: 'Arial', sans-serif;
+    font-weight: 700;
+    letter-spacing: 3px;
+  }
+
+  /* NO-HITTER LIST */
+  .nohit-list {
+    list-style: none;
+    margin-bottom: 20px;
+  }
+  .nohit-list li {
+    background: var(--white);
+    border-left: 3px solid var(--gold);
+    padding: 10px 16px;
+    margin-bottom: 6px;
+    font-family: 'Arial', sans-serif;
+    font-size: 13px;
+    color: #222;
+  }
+  .nohit-list li span {
+    font-weight: 700;
+    color: var(--navy);
+  }
+
+  /* GRAND SLAMS */
+  .tag-cloud {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 20px;
+  }
+  .tag {
+    background: var(--white);
+    border: 1px solid #ddd;
+    padding: 6px 12px;
+    font-family: 'Arial', sans-serif;
+    font-size: 12px;
+    color: #222;
+  }
+  .tag .ty { color: var(--gold); font-weight: 700; margin-right: 4px; }
+
+  /* NOTE TEXT */
+  .note {
+    font-size: 11px;
+    color: var(--gray);
+    font-family: 'Arial', sans-serif;
+    font-style: italic;
+    margin-bottom: 16px;
+  }
+
+  /* TWO-COL */
+  .two-col {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+  }
+  @media (max-width: 640px) {
+    .two-col { grid-template-columns: 1fr; }
+    .banner-stat { min-width: 100px; padding: 10px 16px; }
+    .tab-btn { padding: 12px 12px; font-size: 10px; }
+    .record-val { font-size: 16px; min-width: 55px; }
+  }
+
+  /* COLLEGE GRADS */
+  .college-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 6px;
+    margin-bottom: 20px;
+  }
+  .college-item {
+    background: var(--white);
+    border: 1px solid #ddd;
+    padding: 8px 12px;
+    font-family: 'Arial', sans-serif;
+    font-size: 12px;
+  }
+  .college-item .cn { font-weight: 700; color: var(--navy); }
+  .college-item .cs { color: var(--gray); }
+
+  /* ERA HEADER */
+  .era-header {
+    background: var(--navy-light);
+    color: var(--gold);
+    font-family: 'Arial', sans-serif;
+    font-size: 11px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    padding: 8px 14px;
+    margin: 20px 0 8px;
+    font-weight: 700;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-badge">
+    <div class="school">Munster High School &mdash; Munster, Indiana</div>
+    <h1>Mustang Baseball</h1>
+    <div class="subtitle">Record Book</div>
+  </div>
+  <div class="header-meta">Updated Through 2013 &nbsp;&bull;&nbsp; Est. 1965</div>
+</header>
+
+<div class="banner-stats">
+  <div class="banner-stat"><span class="num">2002</span><span class="lbl">State Champions</span></div>
+  <div class="banner-stat"><span class="num">4</span><span class="lbl">Final Four Apps</span></div>
+  <div class="banner-stat"><span class="num">7</span><span class="lbl">Sectional Titles</span></div>
+  <div class="banner-stat"><span class="num">12</span><span class="lbl">Conf. Titles</span></div>
+  <div class="banner-stat"><span class="num">.431</span><span class="lbl">Career BA Record</span></div>
+  <div class="banner-stat"><span class="num">49 Yrs</span><span class="lbl">Program History</span></div>
+</div>
+
+<nav class="tab-bar">
+  <button class="tab-btn active" onclick="showTab('team')">Team Records</button>
+  <button class="tab-btn" onclick="showTab('hitting')">Individual Hitting</button>
+  <button class="tab-btn" onclick="showTab('pitching')">Pitching</button>
+  <button class="tab-btn" onclick="showTab('400club')">The .400 Club</button>
+  <button class="tab-btn" onclick="showTab('honors')">Honors & Awards</button>
+  <button class="tab-btn" onclick="showTab('ybyyear')">Year by Year</button>
+  <button class="tab-btn" onclick="showTab('college')">College Players</button>
+</nav>
+
+<!-- ===== TAB: TEAM RECORDS ===== -->
+<div id="tab-team" class="tab-content active">
+
+  <div class="highlight-box">
+    <div class="hl-label">Program Capsule</div>
+    <div class="hl-text">Coached by Mike Niksic (1965–1985, 346-221-4) and Bob Shinkan (1986–2013), Munster Baseball reached the Indiana Class 4A State Championship in 2002 and the Final Four in 2001, 2006, and 2010. The program has produced All-State selections, MLB draft picks, and over 100 college baseball players.</div>
+  </div>
+
+  <div class="champ-banner">
+    <div class="cb-title">Indiana Class 4A State Champions</div>
+    <div class="cb-years">2002</div>
+  </div>
+
+  <div class="two-col">
+    <div>
+      <div class="section-title">Final Four Appearances</div>
+      <div class="tag-cloud">
+        <div class="tag"><span class="ty">2001</span> Class 4A</div>
+        <div class="tag"><span class="ty">2002</span> State Champs</div>
+        <div class="tag"><span class="ty">2006</span> Class 4A</div>
+        <div class="tag"><span class="ty">2010</span> Class 4A</div>
+      </div>
+
+      <div class="section-title">Regional Championships</div>
+      <div class="tag-cloud">
+        <div class="tag">1985</div><div class="tag">2001</div>
+        <div class="tag">2002</div><div class="tag">2010</div>
+      </div>
+
+      <div class="section-title">Sectional Championships</div>
+      <div class="tag-cloud">
+        <div class="tag">1981</div><div class="tag">1985</div>
+        <div class="tag">1990</div><div class="tag">1991</div>
+        <div class="tag">1996</div><div class="tag">1997</div>
+        <div class="tag">2001</div><div class="tag">2002</div>
+        <div class="tag">2005</div><div class="tag">2006</div>
+      </div>
+
+      <div class="section-title">Conference Championships</div>
+      <div class="tag-cloud">
+        <div class="tag">1975</div><div class="tag">1976</div>
+        <div class="tag">1978</div><div class="tag">1986</div>
+        <div class="tag">1988</div><div class="tag">1989</div>
+        <div class="tag">1998</div><div class="tag">2004</div>
+        <div class="tag">2007</div>
+      </div>
+    </div>
+
+    <div>
+      <div class="section-title">Best Won-Loss Records</div>
+      <table class="data-table">
+        <thead><tr><th>W-L</th><th>Year</th><th>Notes</th></tr></thead>
+        <tbody>
+          <tr class="champ-row"><td class="num">25-9</td><td>2002</td><td>Class 4A State Champions</td></tr>
+          <tr><td class="num">26-8</td><td>2001</td><td>Class 4A Final Four</td></tr>
+          <tr><td class="num">27-5</td><td>1986</td><td>Ranked #1 four weeks</td></tr>
+          <tr><td class="num">24-6</td><td>1978</td><td>Conf. Champions</td></tr>
+          <tr><td class="num">23-9</td><td>2010</td><td>Class 4A Final Four</td></tr>
+          <tr><td class="num">23-11</td><td>2006</td><td>Class 4A Final Four</td></tr>
+          <tr><td class="num">23-8</td><td>1984</td><td>&nbsp;</td></tr>
+          <tr><td class="num">26-6</td><td>1997</td><td>Sectional Champs</td></tr>
+          <tr><td class="num">22-7</td><td>1989</td><td>&nbsp;</td></tr>
+          <tr><td class="num">22-8</td><td>2007</td><td>LAC Tourney Champs</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="section-title">Team Offensive Records</div>
+  <div class="record-grid">
+    <div class="record-card">
+      <div class="category">Runs Scored</div>
+      <div class="record-entry"><span class="record-val">287</span><span class="record-info">Season<br><span class="year">2001</span></span></div>
+      <div class="record-entry"><span class="record-val">28</span><span class="record-info">Single Game vs. River Forest<br><span class="year">1999</span></span></div>
+    </div>
+    <div class="record-card">
+      <div class="category">Hits</div>
+      <div class="record-entry"><span class="record-val">336</span><span class="record-info">Season<br><span class="year">2001 &amp; 2002</span></span></div>
+      <div class="record-entry"><span class="record-val">22</span><span class="record-info">Single Game vs. Gavit<br><span class="year">2003</span></span></div>
+      <div class="record-entry"><span class="record-val">981</span><span class="record-info">At Bats, Season<br><span class="year">2001</span></span></div>
+    </div>
+    <div class="record-card">
+      <div class="category">Extra Bases</div>
+      <div class="record-entry"><span class="record-val">78</span><span class="record-info">Doubles, Season<br><span class="year">2002</span></span></div>
+      <div class="record-entry"><span class="record-val">24</span><span class="record-info">Triples, Season<br><span class="year">2001</span></span></div>
+      <div class="record-entry"><span class="record-val">6</span><span class="record-info">Triples, 1 Game vs. Gary West Side (Tied State Record)<br><span class="year">2001</span></span></div>
+      <div class="record-entry"><span class="record-val">38</span><span class="record-info">Home Runs, Season<br><span class="year">1987</span></span></div>
+    </div>
+    <div class="record-card">
+      <div class="category">RBI &amp; Points</div>
+      <div class="record-entry"><span class="record-val">250</span><span class="record-info">RBI, Season<br><span class="year">2001</span></span></div>
+      <div class="record-entry"><span class="record-val">5,789</span><span class="record-info">Offensive Points, Season<br><span class="year">1985</span></span></div>
+      <div class="record-entry"><span class="record-val">480</span><span class="record-info">Offensive Points, 1 Game vs. River Forest<br><span class="year">1999</span></span></div>
+    </div>
+    <div class="record-card">
+      <div class="category">Grand Slams &amp; Stolen Bases</div>
+      <div class="record-entry"><span class="record-val">3</span><span class="record-info">Grand Slams, Season<br><span class="year">1998 &amp; 1999</span></span></div>
+      <div class="record-entry"><span class="record-val">94</span><span class="record-info">Stolen Bases, Season<br><span class="year">1983</span></span></div>
+    </div>
+    <div class="record-card">
+      <div class="category">Averages</div>
+      <div class="record-entry"><span class="record-val avg">.379</span><span class="record-info">Best Team Batting Average<br><span class="year">2000</span></span></div>
+      <div class="record-entry"><span class="record-val avg">.564</span><span class="record-info">Best Team Slugging Average<br><span class="year">2007</span></span></div>
+    </div>
+  </div>
+
+  <div class="section-title">Team Fielding &amp; Pitching Records</div>
+  <div class="record-grid">
+    <div class="record-card">
+      <div class="category">Fielding</div>
+      <div class="record-entry"><span class="record-val avg">.961</span><span class="record-info">Best Team Fielding Average<br><span class="year">1994</span></span></div>
+      <div class="record-entry"><span class="record-val">711</span><span class="record-info">Most Put-Outs, Season<br><span class="year">1981</span></span></div>
+      <div class="record-entry"><span class="record-val">285</span><span class="record-info">Most Assists, Season</span></div>
+      <div class="record-entry"><span class="record-val">25</span><span class="record-info">Most Double Plays, Season<br><span class="year">1977</span></span></div>
+      <div class="record-entry"><span class="record-val">5</span><span class="record-info">Most Double Plays, Game<br><span class="year">1977</span></span></div>
+    </div>
+    <div class="record-card">
+      <div class="category">Pitching Staff</div>
+      <div class="record-entry"><span class="record-val avg">1.05</span><span class="record-info">Best Staff ERA, Season<br><span class="year">1978</span></span></div>
+      <div class="record-entry"><span class="record-val">315</span><span class="record-info">Most Staff Strike Outs, Season<br><span class="year">2002</span></span></div>
+      <div class="record-entry"><span class="record-val">10</span><span class="record-info">Most Staff Shut-Outs<br><span class="year">2002</span></span></div>
+      <div class="record-entry"><span class="record-val">40</span><span class="record-info">Consecutive Scoreless Innings, Staff<br><span class="year">2002</span></span></div>
+    </div>
+    <div class="record-card">
+      <div class="category">Miscellaneous Team</div>
+      <div class="record-entry"><span class="record-val">14</span><span class="record-info">Consecutive Wins<br><span class="year">1984 &amp; 1989</span></span></div>
+      <div class="record-entry"><span class="record-val">18</span><span class="record-info">Runs in One Inning (2nd inning vs. Griffith)<br><span class="year">1994</span></span></div>
+      <div class="record-entry"><span class="record-val">7</span><span class="record-info">Consecutive Hits — 6th inning vs. Merrillville (1975) &amp; 3rd inning vs. Calumet (1998)</span></div>
+    </div>
+    <div class="record-card">
+      <div class="category">Oddities</div>
+      <div class="record-entry"><span class="record-val" style="font-size:13px">Triple Play</span><span class="record-info">Bumbales-Hetrick-Oberle (F3-4-6)<br>vs. Lowell, <span class="year">1972</span></span></div>
+      <div class="record-entry"><span class="record-val" style="font-size:13px">13-Inn.</span><span class="record-info">Longest Game — Loss to Highland 5-2<br><span class="year">5/18/2011</span></span></div>
+    </div>
+  </div>
+
+</div>
+
+<!-- ===== TAB: INDIVIDUAL HITTING ===== -->
+<div id="tab-hitting" class="tab-content">
+
+  <p class="note">Batting Average records require at least 2.5 AB per game played. Fielding Average records require at least 2/3 games played.</p>
+
+  <div class="section-title">Season Records</div>
+  <div class="record-grid">
+    <div class="record-card">
+      <div class="category">Batting Average</div>
+      <div class="record-entry"><span class="record-val avg">.500</span><span class="record-info">Bob Morris (41/82)<br><span class="year">1990</span></span></div>
+    </div>
+    <div class="record-card">
+      <div class="category">Career Batting Average</div>
+      <div class="record-entry"><span class="record-val avg">.431</span><span class="record-info">Mike Rosen (93/216)<br><span class="year">2000, 01, 02</span></span></div>
+    </div>
+    <div class="record-card">
+      <div class="category">Slugging Average</div>
+      <div class="record-entry"><span class="record-val avg">1.012</span><span class="record-info">Bob Morris<br><span class="year">1990</span></span></div>
+    </div>
+    <div class="record-card">
+      <div class="category">Hits — Season</div>
+      <div class="record-entry"><span class="record-val">52</span><span class="record-info">Mike Mirabelli<br><span class="year">2001</span></span></div>
+    </div>
+    <div class="record-card">
+      <div class="category">Runs Scored — Season</div>
+      <div class="record-entry"><span class="record-val">43</span><span class="record-info">Dave Cerajewski<br><span class="year">1985</span></span></div>
+    </div>
+    <div class="record-card">
+      <div class="category">RBI — Season</div>
+      <div class="record-entry"><span class="record-val">48</span><span class="record-info">Brian Wolotka<br><span class="year">1997</span></span></div>
+    </div>
+    <div class="record-card">
+      <div class="category">RBI — Single Game</div>
+      <div class="record-entry"><span class="record-val">9</span><span class="record-info">Larry Hemingway vs. Lake Station<br><span class="year">1983</span></span></div>
+      <div class="record-entry"><span class="record-val">9</span><span class="record-info">Brian Wolotka vs. Morton<br><span class="year">1998</span></span></div>
+      <div class="record-entry"><span class="record-val">9</span><span class="record-info">Pat Winterhaler vs. Hammond High<br><span class="year">2004</span></span></div>
+    </div>
+    <div class="record-card">
+      <div class="category">Doubles — Season</div>
+      <div class="record-entry"><span class="record-val">15</span><span class="record-info">Brian Christiansen &nbsp;<span class="year">1997</span></span></div>
+      <div class="record-entry"><span class="record-val">15</span><span class="record-info">Mike Kalina &nbsp;<span class="year">2003</span></span></div>
+      <div class="record-entry"><span class="record-val">15</span><span class="record-info">Scott Shaner &nbsp;<span class="year">2013</span></span></div>
+    </div>
+    <div class="record-card">
+      <div class="category">Triples — Season</div>
+      <div class="record-entry"><span class="record-val">7</span><span class="record-info">Kevin Kutansky<br><span class="year">2001</span></span></div>
+    </div>
+    <div class="record-card">
+      <div class="category">Home Runs — Season</div>
+      <div class="record-entry"><span class="record-val">11</span><span class="record-info">Bob Morris<br><span class="year">1990</span></span></div>
+    </div>
+    <div class="record-card">
+      <div class="category">Home Runs — Career</div>
+      <div class="record-entry"><span class="record-val">18</span><span class="record-info">Brian Wolotka<br><span class="year">1996, 97, 98</span></span></div>
+    </div>
+    <div class="record-card">
+      <div class="category">Home Runs — Single Game</div>
+      <div class="record-entry"><span class="record-val">3</span><span class="record-info">Brian Boyle vs. Benton Central<br><span class="year">1976</span></span></div>
+      <div class="record-entry"><span class="record-val">3</span><span class="record-info">John Bugajski vs. Hobart<br><span class="year">2007</span></span></div>
+    </div>
+  </div>
+
+  <div class="section-title">Streak &amp; Points Records</div>
+  <div class="record-grid">
+    <div class="record-card">
+      <div class="category">Consecutive Game Hitting Streak</div>
+      <div class="record-entry"><span class="record-val">20</span><span class="record-info">Mike Kalina<br><span class="year">2002</span></span></div>
+    </div>
+    <div class="record-card">
+      <div class="category">Offensive Points — Season</div>
+      <div class="record-entry"><span class="record-val">785</span><span class="record-info">Bob Morris<br><span class="year">1990</span></span></div>
+    </div>
+    <div class="record-card">
+      <div class="category">Offensive Points — Single Game</div>
+      <div class="record-entry"><span class="record-val">99</span><span class="record-info">Larry Hemingway vs. Lake Station<br><span class="year">1983</span></span></div>
+      <div class="record-entry"><span class="record-val">88</span><span class="record-info">Brian Boyle vs. Benton Central<br><span class="year">1976</span></span></div>
+    </div>
+    <div class="record-card">
+      <div class="category">Stolen Bases — Season</div>
+      <div class="record-entry"><span class="record-val">27</span><span class="record-info">Steve Muller<br><span class="year">1987</span></span></div>
+    </div>
+  </div>
+
+  <div class="section-title">Fielding Records</div>
+  <div class="record-grid">
+    <div class="record-card">
+      <div class="category">Fielding Average — Perfect Season</div>
+      <div class="record-entry"><span class="record-val avg">1.000</span><span class="record-info">Chris Ebling &nbsp;<span class="year">1968</span></span></div>
+      <div class="record-entry"><span class="record-val avg">1.000</span><span class="record-info">Perrie Capps &nbsp;<span class="year">1975</span></span></div>
+      <div class="record-entry"><span class="record-val avg">1.000</span><span class="record-info">Joe Nelson &nbsp;<span class="year">1982</span></span></div>
+      <div class="record-entry"><span class="record-val avg">1.000</span><span class="record-info">Curt Sobolewski &nbsp;<span class="year">1989</span></span></div>
+    </div>
+    <div class="record-card">
+      <div class="category">Total Put-Outs — Season</div>
+      <div class="record-entry"><span class="record-val">335</span><span class="record-info">Sean Hanas<br><span class="year">1985</span></span></div>
+    </div>
+    <div class="record-card">
+      <div class="category">Total Assists — Season</div>
+      <div class="record-entry"><span class="record-val">73</span><span class="record-info">Rich Rokita<br><span class="year">1991</span></span></div>
+    </div>
+  </div>
+
+  <div class="section-title">Grand Slams — All Time</div>
+  <p class="note">Players who have hit a grand slam for Munster Baseball:</p>
+  <div class="tag-cloud">
+    <div class="tag"><span class="ty">1970</span>Rick Parker</div>
+    <div class="tag"><span class="ty">1970</span>Rusty Brooks</div>
+    <div class="tag"><span class="ty">1972</span>Doug Oberle</div>
+    <div class="tag"><span class="ty">1972</span>Rick Nelson</div>
+    <div class="tag"><span class="ty">1976</span>Dan Banas</div>
+    <div class="tag"><span class="ty">1979</span>Ken Banas</div>
+    <div class="tag"><span class="ty">1981</span>Dave Robinson</div>
+    <div class="tag"><span class="ty">1982</span>Joe Nelson</div>
+    <div class="tag"><span class="ty">1983</span>Larry Hemingway</div>
+    <div class="tag"><span class="ty">1985</span>Dan Soltis</div>
+    <div class="tag"><span class="ty">1987</span>Greg Adams</div>
+    <div class="tag"><span class="ty">1987</span>Tim O'Mara</div>
+    <div class="tag"><span class="ty">1988</span>Bob Morris</div>
+    <div class="tag"><span class="ty">1990</span>Bob Morris</div>
+    <div class="tag"><span class="ty">1990</span>Tom Morey</div>
+    <div class="tag"><span class="ty">1992</span>Kent Boomsma</div>
+    <div class="tag"><span class="ty">1993</span>Bob Bogucki (2)</div>
+    <div class="tag"><span class="ty">1994</span>Jeff O'Connor</div>
+    <div class="tag"><span class="ty">1994</span>Steve Holka</div>
+    <div class="tag"><span class="ty">1996</span>John Rybicki</div>
+    <div class="tag"><span class="ty">1997</span>Brian Wolotka</div>
+    <div class="tag"><span class="ty">1997</span>Todd Compton</div>
+    <div class="tag"><span class="ty">1998</span>Brian Wolotka (2)</div>
+    <div class="tag"><span class="ty">1999</span>Jeremy Newman</div>
+    <div class="tag"><span class="ty">1999</span>Dan Schmid</div>
+    <div class="tag"><span class="ty">1999</span>Ryan Bulan</div>
+    <div class="tag"><span class="ty">2000</span>John Hanrahan</div>
+    <div class="tag"><span class="ty">2001</span>Brad Nykiel</div>
+    <div class="tag"><span class="ty">2002</span>Paul Obszanski</div>
+    <div class="tag"><span class="ty">2004</span>Pat Winterhaler</div>
+    <div class="tag"><span class="ty">2004</span>Brent Banach</div>
+    <div class="tag"><span class="ty">2006</span>Bret Keil</div>
+    <div class="tag"><span class="ty">2007</span>Jeff Spyrka</div>
+    <div class="tag"><span class="ty">2008</span>Brett Keeler</div>
+    <div class="tag"><span class="ty">2009</span>Ryan Wilkinson</div>
+    <div class="tag"><span class="ty">2012</span>Alex DelRio</div>
+    <div class="tag"><span class="ty">2013</span>Mike Mueller</div>
+  </div>
+
+</div>
+
+<!-- ===== TAB: PITCHING ===== -->
+<div id="tab-pitching" class="tab-content">
+
+  <div class="section-title">Individual Pitching Records</div>
+  <div class="record-grid">
+    <div class="record-card">
+      <div class="category">Best Season Record</div>
+      <div class="record-entry"><span class="record-val">10-2</span><span class="record-info">Elliott Gibbs<br><span class="year">2002</span></span></div>
+      <div class="record-entry"><span class="record-val">10-3</span><span class="record-info">Paul Banas<br><span class="year">1982</span></span></div>
+      <div class="record-entry"><span class="record-val">9-1</span><span class="record-info">Tom Morey<br><span class="year">1990</span></span></div>
+      <div class="record-entry"><span class="record-val">9-3</span><span class="record-info">Randy Wiancek<br><span class="year">1998</span></span></div>
+      <div class="record-entry"><span class="record-val">9-3</span><span class="record-info">Joe Rybicki<br><span class="year">2001</span></span></div>
+      <div class="record-entry"><span class="record-val">9-3</span><span class="record-info">Paul Obszanski<br><span class="year">2002</span></span></div>
+      <div class="record-entry"><span class="record-val">9-3</span><span class="record-info">Jeff O'Connor<br><span class="year">1994</span></span></div>
+      <div class="record-entry"><span class="record-val">9-2</span><span class="record-info">Ryan Wilkinson<br><span class="year">2010</span></span></div>
+    </div>
+    <div class="record-card">
+      <div class="category">Best Earned Run Average (Season)</div>
+      <div class="record-entry"><span class="record-val avg">0.16</span><span class="record-info">Chris Chelich<br><span class="year">1978</span></span></div>
+      <div class="record-entry"><span class="record-val avg">0.69</span><span class="record-info">Mark DeRolf<br><span class="year">1978</span></span></div>
+      <div class="record-entry"><span class="record-val avg">1.00</span><span class="record-info">Elliott Gibbs<br><span class="year">2002</span></span></div>
+      <div class="record-entry"><span class="record-val avg">1.01</span><span class="record-info">Ryan Wilkinson<br><span class="year">2010</span></span></div>
+      <div class="record-entry"><span class="record-val avg">1.13</span><span class="record-info">Lou Carbonare<br><span class="year">1982</span></span></div>
+    </div>
+    <div class="record-card">
+      <div class="category">Strike Outs — Single Game</div>
+      <div class="record-entry"><span class="record-val">19</span><span class="record-info">Gary Shutan vs. Hammond Clark<br><span class="year">1986</span></span></div>
+      <div class="record-entry"><span class="record-val">19</span><span class="record-info">Jon Nourie vs. Merrillville<br><span class="year">2000</span></span></div>
+      <div class="record-entry"><span class="record-val">19</span><span class="record-info">Elliott Gibbs vs. Lake Central<br><span class="year">2002</span></span></div>
+    </div>
+    <div class="record-card">
+      <div class="category">Strike Outs — Season</div>
+      <div class="record-entry"><span class="record-val">136</span><span class="record-info">Elliott Gibbs<br><span class="year">2002</span></span></div>
+    </div>
+    <div class="record-card">
+      <div class="category">Least Hits Allowed (Min. 35 IP)</div>
+      <div class="record-entry"><span class="record-val">16</span><span class="record-info">Brian Kushnak (35.3 IP)<br><span class="year">1984</span></span></div>
+    </div>
+    <div class="record-card">
+      <div class="category">Least Walks Issued (Min. 35 IP)</div>
+      <div class="record-entry"><span class="record-val">7</span><span class="record-info">Lou Carbonare (43.3 IP)<br><span class="year">1981</span></span></div>
+      <div class="record-entry"><span class="record-val">7</span><span class="record-info">Lou Carbonare (37.3 IP)<br><span class="year">1982</span></span></div>
+    </div>
+    <div class="record-card">
+      <div class="category">Most Shut-Outs — Season</div>
+      <div class="record-entry"><span class="record-val">5</span><span class="record-info">Mark Panozzo<br><span class="year">1988</span></span></div>
+    </div>
+    <div class="record-card">
+      <div class="category">Staff Walk Record (Season)</div>
+      <div class="record-entry"><span class="record-val">72</span><span class="record-info">Fewest Walks, Staff<br><span class="year">1982</span></span></div>
+    </div>
+  </div>
+
+  <div class="section-title">Consecutive No-Hit Innings — Staff</div>
+  <ul class="nohit-list">
+    <li><span>12 Consecutive No-Hit Innings</span> &mdash; 1974: Biedron no-hit Lake Central 4/17/74 (7 innings) &amp; Chelich no-hit Calumet on 4/17/74 (5 innings)</li>
+  </ul>
+
+  <div class="section-title">No-Hitters</div>
+  <ul class="nohit-list">
+    <li><span>Lou Biedron</span> vs. River Forest &mdash; 1972</li>
+    <li><span>Lou Biedron</span> vs. Crown Point &mdash; 1972</li>
+    <li><span>Lou Biedron</span> vs. Hanover Central &mdash; 1972</li>
+    <li><span>Lou Biedron</span> vs. Lake Central (5 innings) &mdash; 1973</li>
+    <li><span>Lou Biedron</span> vs. Lake Central (5 innings) &mdash; 1974</li>
+    <li><span>Lou Carbonare (4 inn.) &amp; Jim Zajac (3 inn.)</span> vs. Calumet &mdash; 1982</li>
+    <li><span>Brian Kushnak</span> vs. Gavit &mdash; 1983</li>
+    <li><span>Brian Kushnak</span> vs. River Forest (5 inn.), Highland (5 inn.), &amp; Calumet (5 inn.) &mdash; 1984</li>
+    <li><span>Ron Ware (5 inn.) &amp; Ken Mahala (2 inn.)</span> vs. Morton &mdash; 1984</li>
+    <li><span>Chuck Pawelko</span> vs. Lake Central (5 innings) &mdash; 1988</li>
+    <li><span>Chris Fortin (4 inn.) &amp; Josh Van Vessen (1 inn.)</span> vs. Calumet &mdash; 1994</li>
+    <li><span>Jason Ciesielski</span> vs. North Newton (5 innings) &mdash; 1999</li>
+    <li><span>Mike Mirabelli</span> vs. West Side (5 innings) &mdash; 1999</li>
+    <li><span>Paul Obszanski</span> vs. Calumet (5 innings) &mdash; 2002</li>
+    <li><span>Elliott Gibbs</span> vs. Griffith (5 innings) &mdash; 2002</li>
+    <li><span>Elliott Gibbs</span> vs. Lowell &mdash; 2002</li>
+  </ul>
+
+  <div class="section-title">Golden Arm Award — Best Pitcher Each Year</div>
+  <div class="award-list">
+    <div class="award-item"><span class="ay">1988</span><span class="an">Mark Panozzo</span></div>
+    <div class="award-item"><span class="ay">1989</span><span class="an">Kevin Baradziej</span></div>
+    <div class="award-item"><span class="ay">1990</span><span class="an">Tom Morey</span></div>
+    <div class="award-item"><span class="ay">1991</span><span class="an">Ivan Hansen &amp; Rich Rokita</span></div>
+    <div class="award-item"><span class="ay">1992</span><span class="an">Ivan Hansen &amp; Rich Rokita</span></div>
+    <div class="award-item"><span class="ay">1993</span><span class="an">Erik Fleischman &amp; Bob Bogucki</span></div>
+    <div class="award-item"><span class="ay">1994</span><span class="an">Chris Fortin</span></div>
+    <div class="award-item"><span class="ay">1995</span><span class="an">Jeff Dumakowski</span></div>
+    <div class="award-item"><span class="ay">1996</span><span class="an">Joe Mitchener</span></div>
+    <div class="award-item"><span class="ay">1997</span><span class="an">Bryant Poteet</span></div>
+    <div class="award-item"><span class="ay">1998</span><span class="an">Randy Wiancek</span></div>
+    <div class="award-item"><span class="ay">1999</span><span class="an">Jason Helbling</span></div>
+    <div class="award-item"><span class="ay">2000</span><span class="an">Jon Nourie</span></div>
+    <div class="award-item"><span class="ay">2001</span><span class="an">Joe Rybicki</span></div>
+    <div class="award-item"><span class="ay">2002</span><span class="an">Elliott Gibbs</span></div>
+    <div class="award-item"><span class="ay">2003</span><span class="an">David York</span></div>
+    <div class="award-item"><span class="ay">2004</span><span class="an">Brian Hayes</span></div>
+    <div class="award-item"><span class="ay">2005</span><span class="an">Tim Lukoshus</span></div>
+    <div class="award-item"><span class="ay">2006</span><span class="an">Jake Ernd</span></div>
+    <div class="award-item"><span class="ay">2007</span><span class="an">Blake Platt</span></div>
+    <div class="award-item"><span class="ay">2008</span><span class="an">Blake Platt</span></div>
+    <div class="award-item"><span class="ay">2009</span><span class="an">Ryan Wilkinson</span></div>
+    <div class="award-item"><span class="ay">2010</span><span class="an">Ryan Wilkinson</span></div>
+    <div class="award-item"><span class="ay">2011</span><span class="an">Anthony Gomez</span></div>
+    <div class="award-item"><span class="ay">2012</span><span class="an">Scott Jerge</span></div>
+    <div class="award-item"><span class="ay">2013</span><span class="an">Mike Poulos</span></div>
+  </div>
+
+</div>
+
+<!-- ===== TAB: .400 CLUB ===== -->
+<div id="tab-400club" class="tab-content">
+
+  <div class="highlight-box">
+    <div class="hl-label">The .400 Club</div>
+    <div class="hl-text">Every Munster Baseball player who hit .400 or above in a single season. Minimum at-bats required. Bob Morris holds the season record at .500 in 1990; Mike Rosen holds the career record at .431.</div>
+  </div>
+
+  <div class="club-grid">
+    <div class="club-item"><span class="ci-avg">.479</span><span class="ci-name">Mike Edwards (23/48)</span><span class="ci-year">1967</span></div>
+    <div class="club-item"><span class="ci-avg">.408</span><span class="ci-name">Rick Parker (40/98)</span><span class="ci-year">1971</span></div>
+    <div class="club-item"><span class="ci-avg">.406</span><span class="ci-name">Scott Keeler (43/106)</span><span class="ci-year">1975</span></div>
+    <div class="club-item"><span class="ci-avg">.430</span><span class="ci-name">Steve Urbanski (40/93)</span><span class="ci-year">1977</span></div>
+    <div class="club-item"><span class="ci-avg">.453</span><span class="ci-name">Lou Carbonare (29/64)</span><span class="ci-year">1982</span></div>
+    <div class="club-item"><span class="ci-avg">.403</span><span class="ci-name">Hal Morris (31/77)</span><span class="ci-year">1982</span></div>
+    <div class="club-item"><span class="ci-avg">.482</span><span class="ci-name">Hal Morris (39/81)</span><span class="ci-year">1983</span></div>
+    <div class="club-item"><span class="ci-avg">.402</span><span class="ci-name">Ken Mahala (33/82)</span><span class="ci-year">1985</span></div>
+    <div class="club-item"><span class="ci-avg">.427</span><span class="ci-name">Ken Mahala (35/82)</span><span class="ci-year">1986</span></div>
+    <div class="club-item"><span class="ci-avg">.407</span><span class="ci-name">Jim Magrames (35/86)</span><span class="ci-year">1987</span></div>
+    <div class="club-item"><span class="ci-avg">.427</span><span class="ci-name">Brent Bodefeld (32/75)</span><span class="ci-year">1988</span></div>
+    <div class="club-item"><span class="ci-avg">.404</span><span class="ci-name">Al Zabrecky (21/52)</span><span class="ci-year">1988</span></div>
+    <div class="club-item"><span class="ci-avg">.500</span><span class="ci-name">Bob Morris (41/82)</span><span class="ci-year">1990</span></div>
+    <div class="club-item"><span class="ci-avg">.419</span><span class="ci-name">Joe Mitchener (26/62)</span><span class="ci-year">1995</span></div>
+    <div class="club-item"><span class="ci-avg">.407</span><span class="ci-name">Ryan Bothwell (24/59)</span><span class="ci-year">1997</span></div>
+    <div class="club-item"><span class="ci-avg">.412</span><span class="ci-name">Nick Zubay (42/102)</span><span class="ci-year">1997</span></div>
+    <div class="club-item"><span class="ci-avg">.417</span><span class="ci-name">Sandy Rosen (43/103)</span><span class="ci-year">1998</span></div>
+    <div class="club-item"><span class="ci-avg">.444</span><span class="ci-name">Brian Wolotka (44/99)</span><span class="ci-year">1998</span></div>
+    <div class="club-item"><span class="ci-avg">.447</span><span class="ci-name">Jason Helbling (35/84)</span><span class="ci-year">1999</span></div>
+    <div class="club-item"><span class="ci-avg">.474</span><span class="ci-name">Jason Helbling (36/76)</span><span class="ci-year">2000</span></div>
+    <div class="club-item"><span class="ci-avg">.400</span><span class="ci-name">Marc Stojkovich (38/95)</span><span class="ci-year">1999</span></div>
+    <div class="club-item"><span class="ci-avg">.475</span><span class="ci-name">Mike Baniak (38/80)</span><span class="ci-year">2000</span></div>
+    <div class="club-item"><span class="ci-avg">.452</span><span class="ci-name">Mike Rosen (47/104)</span><span class="ci-year">2001</span></div>
+    <div class="club-item"><span class="ci-avg">.407</span><span class="ci-name">Kevin Kutansky (46/113)</span><span class="ci-year">2001</span></div>
+    <div class="club-item"><span class="ci-avg">.441</span><span class="ci-name">Mike Mirabelli (52/118)</span><span class="ci-year">2001</span></div>
+    <div class="club-item"><span class="ci-avg">.411</span><span class="ci-name">Mike Rosen (44/102)</span><span class="ci-year">2002</span></div>
+    <div class="club-item"><span class="ci-avg">.419</span><span class="ci-name">Mike Kalina (44/105)</span><span class="ci-year">2002</span></div>
+    <div class="club-item"><span class="ci-avg">.447</span><span class="ci-name">Mike Kalina (38/85)</span><span class="ci-year">2003</span></div>
+    <div class="club-item"><span class="ci-avg">.444</span><span class="ci-name">Adam DelRio (28/63)</span><span class="ci-year">2003</span></div>
+    <div class="club-item"><span class="ci-avg">.478</span><span class="ci-name">Scott Starewicz (44/92)</span><span class="ci-year">2004</span></div>
+    <div class="club-item"><span class="ci-avg">.406</span><span class="ci-name">Russ Petersen (28/69)</span><span class="ci-year">2004</span></div>
+    <div class="club-item"><span class="ci-avg">.420</span><span class="ci-name">Brent Banach (34/81)</span><span class="ci-year">2005</span></div>
+    <div class="club-item"><span class="ci-avg">.432</span><span class="ci-name">Mike Nowak (51/118)</span><span class="ci-year">2005</span></div>
+    <div class="club-item"><span class="ci-avg">.466</span><span class="ci-name">Brett Keeler (48/103)</span><span class="ci-year">2007</span></div>
+    <div class="club-item"><span class="ci-avg">.406</span><span class="ci-name">Brian Ritz (28/69)</span><span class="ci-year">2007</span></div>
+    <div class="club-item"><span class="ci-avg">.402</span><span class="ci-name">Bret Keil (41/102)</span><span class="ci-year">2007</span></div>
+    <div class="club-item"><span class="ci-avg">.419</span><span class="ci-name">Josh Lukoshus (44/105)</span><span class="ci-year">2010</span></div>
+    <div class="club-item"><span class="ci-avg">.400</span><span class="ci-name">Ryan Wilkinson (36/90)</span><span class="ci-year">2010</span></div>
+    <div class="club-item"><span class="ci-avg">.405</span><span class="ci-name">Alex DelRio (30/74)</span><span class="ci-year">2012</span></div>
+    <div class="club-item"><span class="ci-avg">.417</span><span class="ci-name">Scott Shaner (40/96)</span><span class="ci-year">2013</span></div>
+  </div>
+
+</div>
+
+<!-- ===== TAB: HONORS & AWARDS ===== -->
+<div id="tab-honors" class="tab-content">
+
+  <div class="section-title">All-State Selections</div>
+  <table class="data-table">
+    <thead><tr><th>Year</th><th>Player</th><th>Position</th><th>Honor</th></tr></thead>
+    <tbody>
+      <tr><td>1975</td><td>Scott Keeler</td><td>Catcher</td><td>First Team</td></tr>
+      <tr><td>1978</td><td>Steve Urbanski</td><td>Shortstop</td><td>First Team</td></tr>
+      <tr><td>1982</td><td>Lou Carbonare</td><td>Outfield</td><td>2nd Team</td></tr>
+      <tr><td>1982</td><td>Paul Banas</td><td>Pitcher</td><td>2nd Team</td></tr>
+      <tr><td>1985</td><td>Dave Cerajewski</td><td>Third Base</td><td>2nd Team</td></tr>
+      <tr><td>1988</td><td>Steve Muller</td><td>Second Base</td><td>Honorable Mention</td></tr>
+      <tr><td>1989</td><td>Brent Bodefeld</td><td>Third Base</td><td>2nd Team</td></tr>
+      <tr><td>1990</td><td>Bob Morris</td><td>Shortstop</td><td>2nd Team</td></tr>
+      <tr><td>1997</td><td>Brian Christiansen</td><td>2nd Base</td><td>Honorable Mention</td></tr>
+      <tr class="champ-row"><td>1998</td><td>Brian Wolotka</td><td>Outfield</td><td>First Team</td></tr>
+      <tr class="champ-row"><td>2000</td><td>Jon Nourie</td><td>Pitcher</td><td>First Team</td></tr>
+      <tr class="champ-row"><td>2002</td><td>Mike Rosen</td><td>Outfield</td><td>First Team</td></tr>
+      <tr><td>2007</td><td>Brett Keeler</td><td>Third Base</td><td>Honorable Mention</td></tr>
+      <tr><td>2010</td><td>Ryan Wilkinson</td><td>Pitcher</td><td>Honorable Mention</td></tr>
+    </tbody>
+  </table>
+
+  <div class="section-title">North All-Stars</div>
+  <div class="award-list">
+    <div class="award-item"><span class="ay">1975</span><span class="an">Scott Keeler</span><span class="ap">Catcher</span></div>
+    <div class="award-item"><span class="ay">1976</span><span class="an">Dan Banas</span><span class="ap">First Base</span></div>
+    <div class="award-item"><span class="ay">1977</span><span class="an">Greg Beno</span><span class="ap">Outfield</span></div>
+    <div class="award-item"><span class="ay">1978</span><span class="an">Chris Chelich</span><span class="ap">Pitcher</span></div>
+    <div class="award-item"><span class="ay">1978</span><span class="an">Steve Urbanski</span><span class="ap">Shortstop</span></div>
+    <div class="award-item"><span class="ay">1983</span><span class="an">Hal Morris</span><span class="ap">First Base</span></div>
+    <div class="award-item"><span class="ay">1985</span><span class="an">Dave Cerajewski</span><span class="ap">Third Base</span></div>
+    <div class="award-item"><span class="ay">1990</span><span class="an">Bob Morris</span><span class="ap">Shortstop</span></div>
+    <div class="award-item"><span class="ay">1995</span><span class="an">Jeff O'Connor</span><span class="ap">Pitcher</span></div>
+    <div class="award-item"><span class="ay">1997</span><span class="an">Brian Christiansen</span><span class="ap">Second Base</span></div>
+    <div class="award-item"><span class="ay">1998</span><span class="an">Brian Wolotka</span><span class="ap">Outfield</span></div>
+    <div class="award-item"><span class="ay">2002</span><span class="an">Elliott Gibbs</span><span class="ap">Pitcher</span></div>
+    <div class="award-item"><span class="ay">2004</span><span class="an">Bryan Bokowy</span><span class="ap">Pitcher</span></div>
+    <div class="award-item"><span class="ay">2006</span><span class="an">Mike Nowak</span><span class="ap">Shortstop</span></div>
+    <div class="award-item"><span class="ay">2007</span><span class="an">Pete Jurich</span><span class="ap">Catcher</span></div>
+    <div class="award-item"><span class="ay">2010</span><span class="an">Ryan Wilkinson</span><span class="ap">Pitcher</span></div>
+  </div>
+
+  <div class="section-title">Times Player of the Year</div>
+  <div class="award-list">
+    <div class="award-item"><span class="ay">1995</span><span class="an">Jeff O'Connor</span></div>
+    <div class="award-item"><span class="ay">2002</span><span class="an">Elliott Gibbs</span></div>
+    <div class="award-item"><span class="ay">2010</span><span class="an">Ryan Wilkinson</span></div>
+  </div>
+
+  <div class="section-title">Post Tribune Player of the Year</div>
+  <div class="award-list">
+    <div class="award-item"><span class="ay">2010</span><span class="an">Ryan Wilkinson</span></div>
+  </div>
+
+  <div class="section-title">Academic All-State</div>
+  <div class="award-list">
+    <div class="award-item"><span class="ay">1986</span><span class="an">Dave Sanders</span></div>
+    <div class="award-item"><span class="ay">1990</span><span class="an">Bob Morris / Tom Renwald</span></div>
+    <div class="award-item"><span class="ay">1991</span><span class="an">Thad Mead</span></div>
+    <div class="award-item"><span class="ay">1995</span><span class="an">B.J. Palmer</span></div>
+    <div class="award-item"><span class="ay">1997</span><span class="an">Brian Christiansen</span></div>
+    <div class="award-item"><span class="ay">1998</span><span class="an">Sandy Rosen / Scott Shinkan</span></div>
+    <div class="award-item"><span class="ay">1999</span><span class="an">Dan Schmid</span></div>
+    <div class="award-item"><span class="ay">2008</span><span class="an">Blake Platt / Brian Ritz</span></div>
+    <div class="award-item"><span class="ay">2009</span><span class="an">Kevin Nossem</span></div>
+    <div class="award-item"><span class="ay">2010</span><span class="an">Matt Farrell / Ryan Wilkinson</span></div>
+    <div class="award-item"><span class="ay">2011</span><span class="an">Brooks Platt</span></div>
+    <div class="award-item"><span class="ay">2012</span><span class="an">Tyler Cole / Chris Slivka</span></div>
+    <div class="award-item"><span class="ay">2013</span><span class="an">Alex Crowe</span></div>
+  </div>
+
+  <div class="section-title">Drafted Out of High School</div>
+  <div class="award-list">
+    <div class="award-item"><span class="ay">2000</span><span class="an">Jon Nourie</span><span class="ap">38th Round</span></div>
+  </div>
+
+  <div class="section-title">Annual Awards Presented</div>
+  <p class="note">Team Captain | MVP | P.H.D. (Pride, Hustle, Desire) | Golden Bat</p>
+  <table class="data-table">
+    <thead><tr><th>Year</th><th>Captain(s)</th><th>MVP</th><th>P.H.D.</th><th>Golden Bat</th></tr></thead>
+    <tbody>
+      <tr><td>1965</td><td>Jeff Horan</td><td>Mike Edwards</td><td>Steve Merten</td><td>Mike Edwards</td></tr>
+      <tr><td>1966</td><td>Mike Edwards</td><td>Mike Edwards</td><td>George Baker</td><td>Mike Edwards</td></tr>
+      <tr><td>1967</td><td>Mike Edwards</td><td>Mike Edwards</td><td>John Bognar</td><td>Mike Edwards</td></tr>
+      <tr><td>1968</td><td>Mike Edwards</td><td>Bob Stout</td><td>Mike McComas</td><td>Mike Edwards</td></tr>
+      <tr><td>1969</td><td>Gus Hagburg</td><td>Gus Hagburg</td><td>Bob Stout</td><td>Glenn Skolnik</td></tr>
+      <tr><td>1970</td><td>Bob Parker</td><td>Bob Parker</td><td>Bob Parker</td><td>Rick Parker</td></tr>
+      <tr><td>1971</td><td>Rusty Brooks</td><td>Rusty Brooks</td><td>Bob Shinkan</td><td>Rick Parker</td></tr>
+      <tr><td>1972</td><td>Ken Bumbales</td><td>Ken Bumbales</td><td>Doug Oberle</td><td>Ken Bumbales</td></tr>
+      <tr><td>1973</td><td>Doug Oberle</td><td>Doug Oberle</td><td>Bob Goddard</td><td>Doug Oberle</td></tr>
+      <tr><td>1974</td><td>Lou Biedron</td><td>Scott Keeler</td><td>Nick Katsoulis</td><td>Nick Katsoulis</td></tr>
+      <tr><td>1975</td><td>Scott Keeler</td><td>Scott Keeler</td><td>Brad Bookwood / Tom Maginot</td><td>Scott Keeler</td></tr>
+      <tr><td>1976</td><td>Brian Boyle</td><td>Perrie Capps</td><td>Ron Garzinski</td><td>Gary Downing</td></tr>
+      <tr><td>1977</td><td>Greg Beno</td><td>Dan Banas / Gary Downing</td><td>Jim Pawlowicz</td><td>Steve Urbanski</td></tr>
+      <tr><td>1978</td><td>David Such</td><td>David Such</td><td>Chris Chelich</td><td>Steve Urbanski</td></tr>
+      <tr><td>1979</td><td>Keith Hunter</td><td>Tony Nelson / Mark DeRolf</td><td>Pete Manous</td><td>Tony Nelson</td></tr>
+      <tr><td>1980</td><td>Pete Manous</td><td>Mark Brickman</td><td>Kent McAllister</td><td>Kent McAllister</td></tr>
+      <tr><td>1981</td><td>John Cerajewski</td><td>Adam Easter</td><td>Joe Poi</td><td>Adam Easter / Jim Such</td></tr>
+      <tr><td>1982</td><td>John Cerajewski</td><td>John Cerajewski / Paul Banas</td><td>Lou Carbonare</td><td>Hal Morris / Lou Carbonare</td></tr>
+      <tr><td>1983</td><td>Hal Morris</td><td>Hal Morris</td><td>Dave Lamski</td><td>Hal Morris</td></tr>
+      <tr><td>1984</td><td>Brian Kushnak</td><td>Brian Kushnak</td><td>Perry Manous</td><td>Dave Cerajewski</td></tr>
+      <tr><td>1985</td><td>Perry Manous</td><td>Ken Mahala</td><td>Sean / Chuck Hanas</td><td>Carl Krumrei</td></tr>
+      <tr><td>1986</td><td>Jeff Kapp</td><td>Ken Mahala</td><td>Jeff Kapp</td><td>Greg Zabrecky</td></tr>
+      <tr><td>1987</td><td>Dan Hollis / Greg Adams</td><td>Dan Hollis / Jim Magrames</td><td>Dan Hollis</td><td>Jim Magrames / Steve Muller</td></tr>
+      <tr><td>1988</td><td>Jim Magrames</td><td>Jim Magrames / Steve Muller</td><td>Chuck Pawelko</td><td>Steve Muller / Brent Bodefeld</td></tr>
+      <tr><td>1989</td><td>Al Zabrecky</td><td>Brent Bodefeld</td><td>Al Zabrecky</td><td>Ed Balon</td></tr>
+      <tr><td>1990</td><td>Bob Morris</td><td>Bob Morris / Scott Giba</td><td>Tom Renwald</td><td>Bob Morris</td></tr>
+      <tr><td>1991</td><td>Rich Rokita / Tim Koziatek</td><td>Rich Rokita</td><td>Chip Daros / Tim Koziatek</td><td>Rich Rokita</td></tr>
+      <tr><td>1992</td><td>Ivan Hansen / Mike Jewett</td><td>Mike Jewett</td><td>Brian Morgan / Brian Mendoza</td><td>Sean Hayes</td></tr>
+      <tr><td>1993</td><td>Ryan Stojkovich / Kent Boomsma / Sean Hayes</td><td>Kent Boomsma</td><td>Ryan Stojkovich</td><td>Sean Hayes</td></tr>
+      <tr><td>1994</td><td>Steve Holka / Bob Gonzales / Doug Miller</td><td>Jeff O'Connor</td><td>Bob Gonzales</td><td>Steve Holka / C.J. Compton</td></tr>
+      <tr><td>1995</td><td>Jeff O'Connor / B.J. Palmer / Jeff Dumakowski</td><td>Jeff O'Connor</td><td>Rob Szypczak</td><td>Jeff O'Connor</td></tr>
+      <tr><td>1996</td><td>Joe Mitchener / John Rybicki</td><td>Joe Mitchener</td><td>Joe Mendoza</td><td>Nick Zubay</td></tr>
+      <tr><td>1997</td><td>Brian Christiansen / Bryant Poteet / Todd Compton</td><td>Todd Compton</td><td>Brian Christiansen</td><td>Nick Zubay</td></tr>
+      <tr><td>1998</td><td>Scott Shinkan / Sandy Rosen / Brian Wolotka (+ others)</td><td>Brian Wolotka</td><td>Grant Holajter</td><td>Brian Wolotka</td></tr>
+      <tr><td>1999</td><td>Marc Stojkovich / John Premetz</td><td>Jason Helbling / Dan Schmid</td><td>John Premetz / Jeremy Newman</td><td>Marc Stojkovich</td></tr>
+      <tr><td>2000</td><td>Marc Stojkovich / Jason Helbling</td><td>Mike Baniak</td><td>Marc Stojkovich / John Premetz</td><td>Jason Helbling</td></tr>
+      <tr class="champ-row"><td>2001</td><td>Mike Rosen / Mike Mirabelli / Kevin Kutansky</td><td>Mike Rosen / Brad Nykiel</td><td>Mike Mirabelli</td><td>Mike Rosen</td></tr>
+      <tr class="champ-row"><td>2002</td><td>Mike Rosen / Kevin Kutansky / Brad Nykiel / Kurt Keil</td><td>Mike Rosen / Elliott Gibbs</td><td>Brad Nykiel</td><td>Mike Rosen / Mike Kalina</td></tr>
+      <tr><td>2003</td><td>Mike Kalina / Aaron Cameron</td><td>Mike Kalina / Aaron Cameron</td><td>Rick Balkam</td><td>Adam DelRio</td></tr>
+      <tr><td>2004</td><td>Bryan Bokowy / Brian Hayes</td><td>Bryan Bokowy</td><td>Jon Caddick</td><td>Russ Petersen</td></tr>
+      <tr><td>2005</td><td>Mike Nowak / Mike Hawryszkow / Ross Petersen / Brandon Platt</td><td>Mike Nowak</td><td>Brandon Platt</td><td>Mike Nowak</td></tr>
+      <tr><td>2006</td><td>Mike Sealy / Billy Stuart</td><td>Mike Sealy</td><td>Andrew Bilse</td><td>Adam Enright</td></tr>
+      <tr><td>2007</td><td>Bret Keil / Pete Jurich / Adam Enright / John Bugajski</td><td>Brett Keeler</td><td>Brian Ritz</td><td>Brett Keeler</td></tr>
+      <tr><td>2008</td><td>Blake Platt / Brian Ritz / Brett Keeler / Brandon Miller</td><td>Brett Keeler</td><td>Pat Howard</td><td>Brett Keeler</td></tr>
+      <tr><td>2009</td><td>Mike Adams / T.J. Hecimovich</td><td>Larry Allen / Kevin Watterson</td><td>Matt Brozovic</td><td>Larry Allen</td></tr>
+      <tr><td>2010</td><td>Matt Brozovic / Josh Lukoshus / Ryan Wilkinson</td><td>Josh Lukoshus / Ryan Wilkinson</td><td>Matt Brozovic</td><td>Josh Lukoshus</td></tr>
+      <tr><td>2011</td><td>Nate Eagan / Jim Hinkleman</td><td>Mark Strbjak</td><td>Evan Sylvester</td><td>Brooks Platt</td></tr>
+      <tr><td>2012</td><td>Anthony Gomez / Colin Mudroncik / Mark Strbjak</td><td>Colin Mudroncik</td><td>Anthony Gomez</td><td>Chris Slivka</td></tr>
+      <tr><td>2013</td><td>Scott Shaner / Colin Mudroncik / Mark Strbjak</td><td>Scott Shaner</td><td>Alex Coccia / Trace McCarthy</td><td>Scott Shaner</td></tr>
+    </tbody>
+  </table>
+
+</div>
+
+<!-- ===== TAB: YEAR BY YEAR ===== -->
+<div id="tab-ybyyear" class="tab-content">
+
+  <div class="section-title">Highest State Rankings</div>
+  <div class="tag-cloud">
+    <div class="tag"><span class="ty">1986</span>#1 (4 consecutive weeks)</div>
+    <div class="tag"><span class="ty">2000</span>#1 (2 weeks)</div>
+    <div class="tag"><span class="ty">2003</span>#1 (1 week)</div>
+    <div class="tag"><span class="ty">2004</span>#3</div>
+    <div class="tag"><span class="ty">1989</span>#10</div>
+    <div class="tag"><span class="ty">1995</span>#10</div>
+    <div class="tag"><span class="ty">2007</span>#10</div>
+    <div class="tag"><span class="ty">1997</span>#14</div>
+    <div class="tag"><span class="ty">2010</span>#14</div>
+    <div class="tag"><span class="ty">1998</span>#5</div>
+    <div class="tag"><span class="ty">2001</span>#7</div>
+    <div class="tag"><span class="ty">2002</span>#7</div>
+    <div class="tag"><span class="ty">2008</span>#8</div>
+  </div>
+
+  <div class="section-title">Year by Year Records</div>
+  <p class="note">Coach Niksic career: 346-221-4 &nbsp;|&nbsp; Coach Shinkan career through 2013 at Munster</p>
+  <table class="data-table">
+    <thead><tr><th>Year</th><th>Coach</th><th>W</th><th>L</th><th>T</th><th>Notes</th></tr></thead>
+    <tbody>
+      <tr><td>1965</td><td>Niksic</td><td class="num">12</td><td>6</td><td></td><td></td></tr>
+      <tr><td>1966</td><td>Niksic</td><td class="num">15</td><td>6</td><td></td><td></td></tr>
+      <tr><td>1967</td><td>Niksic</td><td class="num">10</td><td>10</td><td></td><td></td></tr>
+      <tr><td>1968</td><td>Niksic</td><td class="num">12</td><td>12</td><td></td><td></td></tr>
+      <tr><td>1969</td><td>Niksic</td><td class="num">14</td><td>8</td><td>1</td><td></td></tr>
+      <tr><td>1970</td><td>Niksic</td><td class="num">19</td><td>6</td><td>1</td><td></td></tr>
+      <tr><td>1971</td><td>Niksic</td><td class="num">17</td><td>13</td><td></td><td></td></tr>
+      <tr><td>1972</td><td>Niksic</td><td class="num">14</td><td>15</td><td></td><td></td></tr>
+      <tr><td>1973</td><td>Niksic</td><td class="num">15</td><td>14</td><td></td><td></td></tr>
+      <tr><td>1974</td><td>Niksic</td><td class="num">15</td><td>13</td><td></td><td></td></tr>
+      <tr><td>1975</td><td>Niksic</td><td class="num">19</td><td>12</td><td>1</td><td></td></tr>
+      <tr><td>1976</td><td>Niksic</td><td class="num">16</td><td>14</td><td></td><td></td></tr>
+      <tr><td>1977</td><td>Niksic</td><td class="num">20</td><td>11</td><td></td><td></td></tr>
+      <tr><td>1978</td><td>Niksic</td><td class="num">24</td><td>6</td><td></td><td>Conference Champions</td></tr>
+      <tr><td>1979</td><td>Niksic</td><td class="num">9</td><td>16</td><td>1</td><td></td></tr>
+      <tr><td>1980</td><td>Niksic</td><td class="num">11</td><td>15</td><td></td><td></td></tr>
+      <tr><td>1981</td><td>Niksic</td><td class="num">19</td><td>13</td><td></td><td>Sectional Champs</td></tr>
+      <tr><td>1982</td><td>Niksic</td><td class="num">18</td><td>6</td><td></td><td></td></tr>
+      <tr><td>1983</td><td>Niksic</td><td class="num">19</td><td>6</td><td></td><td></td></tr>
+      <tr><td>1984</td><td>Niksic</td><td class="num">23</td><td>8</td><td></td><td></td></tr>
+      <tr><td>1985</td><td>Niksic</td><td class="num">25</td><td>11</td><td></td><td>Sectional &amp; Regional Champs</td></tr>
+      <tr style="background:#e8f0ff"><td colspan="6" style="font-size:11px;padding:6px 14px;font-family:Arial;color:#555;letter-spacing:2px;text-transform:uppercase;">Niksic Career Totals: 346 – 221 – 4</td></tr>
+      <tr class="champ-row"><td>1986</td><td>Shinkan</td><td class="num">27</td><td>5</td><td></td><td>Conference Champs — Ranked #1 (4 weeks)</td></tr>
+      <tr><td>1987</td><td>Shinkan</td><td class="num">19</td><td>12</td><td></td><td></td></tr>
+      <tr><td>1988</td><td>Shinkan</td><td class="num">21</td><td>9</td><td></td><td>Conference Champs</td></tr>
+      <tr><td>1989</td><td>Shinkan</td><td class="num">22</td><td>7</td><td></td><td>Conference Champs</td></tr>
+      <tr><td>1990</td><td>Shinkan</td><td class="num">21</td><td>7</td><td></td><td>Sectional Champs</td></tr>
+      <tr><td>1991</td><td>Shinkan</td><td class="num">18</td><td>13</td><td>1</td><td>Sectional Champs</td></tr>
+      <tr><td>1992</td><td>Shinkan</td><td class="num">15</td><td>13</td><td></td><td></td></tr>
+      <tr><td>1993</td><td>Shinkan</td><td class="num">17</td><td>13</td><td></td><td></td></tr>
+      <tr><td>1994</td><td>Shinkan</td><td class="num">20</td><td>9</td><td></td><td></td></tr>
+      <tr><td>1995</td><td>Shinkan</td><td class="num">18</td><td>8</td><td></td><td></td></tr>
+      <tr><td>1996</td><td>Shinkan</td><td class="num">16</td><td>16</td><td></td><td>Sectional Champs</td></tr>
+      <tr class="champ-row"><td>1997</td><td>Shinkan</td><td class="num">26</td><td>6</td><td></td><td>Sectional Champs</td></tr>
+      <tr><td>1998</td><td>Shinkan</td><td class="num">20</td><td>10</td><td></td><td>Conference Champs</td></tr>
+      <tr><td>1999</td><td>Shinkan</td><td class="num">21</td><td>10</td><td></td><td></td></tr>
+      <tr><td>2000</td><td>Shinkan</td><td class="num">22</td><td>7</td><td></td><td>Ranked #1 (2 weeks)</td></tr>
+      <tr class="champ-row"><td>2001</td><td>Shinkan</td><td class="num">26</td><td>8</td><td></td><td>Class 4A Final Four — Sectional &amp; Regional Champs</td></tr>
+      <tr class="champ-row"><td>2002</td><td>Shinkan</td><td class="num">25</td><td>9</td><td></td><td>CLASS 4A STATE CHAMPIONS — Regional Champs</td></tr>
+      <tr><td>2003</td><td>Shinkan</td><td class="num">20</td><td>10</td><td></td><td></td></tr>
+      <tr><td>2004</td><td>Shinkan</td><td class="num">23</td><td>6</td><td></td><td>LAC Tourney Champs — Ranked #3</td></tr>
+      <tr><td>2005</td><td>Shinkan</td><td class="num">19</td><td>14</td><td></td><td>Sectional Champs</td></tr>
+      <tr class="champ-row"><td>2006</td><td>Shinkan</td><td class="num">23</td><td>11</td><td></td><td>Class 4A Final Four — Sectional Champs</td></tr>
+      <tr><td>2007</td><td>Shinkan</td><td class="num">22</td><td>8</td><td></td><td>LAC Tourney Champs — Conference Champs</td></tr>
+      <tr><td>2008</td><td>Shinkan</td><td class="num">15</td><td>11</td><td></td><td></td></tr>
+      <tr><td>2009</td><td>Shinkan</td><td class="num">11</td><td>16</td><td></td><td></td></tr>
+      <tr class="champ-row"><td>2010</td><td>Shinkan</td><td class="num">23</td><td>9</td><td></td><td>Class 4A Final Four — Regional Champs</td></tr>
+      <tr><td>2011</td><td>Shinkan</td><td class="num">10</td><td>17</td><td></td><td></td></tr>
+      <tr><td>2012</td><td>Shinkan</td><td class="num">15</td><td>14</td><td></td><td></td></tr>
+      <tr><td>2013</td><td>Shinkan</td><td class="num">21</td><td>9</td><td></td><td></td></tr>
+    </tbody>
+  </table>
+
+</div>
+
+<!-- ===== TAB: COLLEGE PLAYERS ===== -->
+<div id="tab-college" class="tab-content">
+
+  <div class="highlight-box">
+    <div class="hl-label">Graduates Who Played College Baseball</div>
+    <div class="hl-text">Over 100 Munster Baseball alumni have gone on to play at the college level, from NCAA Division I programs to junior colleges. Listed below by era.</div>
+  </div>
+
+  <div class="era-header">Pre-Niksic Era</div>
+  <div class="college-grid">
+    <div class="college-item"><span class="cn">Gus Hagberg</span><span class="cs">Valparaiso</span></div>
+    <div class="college-item"><span class="cn">Bob Goddard</span><span class="cs">Purdue Calumet</span></div>
+    <div class="college-item"><span class="cn">Doug Oberle</span><span class="cs">E. Illinois</span></div>
+    <div class="college-item"><span class="cn">Rusty Brooks</span><span class="cs">Indiana State</span></div>
+    <div class="college-item"><span class="cn">Bob Shinkan</span><span class="cs">Ball State</span></div>
+    <div class="college-item"><span class="cn">Jim Freeman</span><span class="cs">Marion</span></div>
+  </div>
+
+  <div class="era-header">Mike Niksic Era (1965–1985)</div>
+  <div class="college-grid">
+    <div class="college-item"><span class="cn">Mike Edwards</span><span class="cs">Indiana</span></div>
+    <div class="college-item"><span class="cn">Scott Keeler</span><span class="cs">Indiana Central</span></div>
+    <div class="college-item"><span class="cn">Rick Parker</span><span class="cs">Indiana State</span></div>
+    <div class="college-item"><span class="cn">Brad Bookwood</span><span class="cs">Butler</span></div>
+    <div class="college-item"><span class="cn">Ken Bumbales</span><span class="cs">W. Michigan</span></div>
+    <div class="college-item"><span class="cn">Jeff Peschke</span><span class="cs">Cornell</span></div>
+    <div class="college-item"><span class="cn">Gary Starewicz</span><span class="cs">Indiana State</span></div>
+    <div class="college-item"><span class="cn">Steve Johnson</span><span class="cs">Ball State</span></div>
+    <div class="college-item"><span class="cn">Steve Scherer</span><span class="cs">Olivet Nazarene</span></div>
+    <div class="college-item"><span class="cn">Jim Pawlowicz</span><span class="cs">Huntington</span></div>
+    <div class="college-item"><span class="cn">Rick Nelson</span><span class="cs">Valley Forge</span></div>
+    <div class="college-item"><span class="cn">Mark Ladd</span><span class="cs">Notre Dame</span></div>
+    <div class="college-item"><span class="cn">Steve Urbanski</span><span class="cs">Purdue</span></div>
+    <div class="college-item"><span class="cn">Jon Stevenson</span><span class="cs">Indiana</span></div>
+    <div class="college-item"><span class="cn">Brian Boyle</span><span class="cs">Oklahoma State</span></div>
+    <div class="college-item"><span class="cn">Dan Banas</span><span class="cs">Indian River / La. Tech</span></div>
+    <div class="college-item"><span class="cn">Mark Brickman</span><span class="cs">Evansville</span></div>
+    <div class="college-item"><span class="cn">Jim Dedelow</span><span class="cs">Occidental</span></div>
+    <div class="college-item"><span class="cn">Greg Beno</span><span class="cs">Purdue</span></div>
+    <div class="college-item"><span class="cn">Adam Easter</span><span class="cs">Glen Oaks C.C. / Texas A&amp;M</span></div>
+    <div class="college-item"><span class="cn">Chris Chelich</span><span class="cs">Wisconsin</span></div>
+    <div class="college-item"><span class="cn">Paul Banas</span><span class="cs">Trinidad J.C. / Texas Arlington</span></div>
+    <div class="college-item"><span class="cn">Tony Nelson</span><span class="cs">Indiana</span></div>
+    <div class="college-item"><span class="cn">Dave Lamski</span><span class="cs">St. Joseph</span></div>
+    <div class="college-item"><span class="cn">Brad Neely</span><span class="cs">Ball State</span></div>
+    <div class="college-item"><span class="cn">Sean Hanas</span><span class="cs">Purdue</span></div>
+    <div class="college-item"><span class="cn">Pete Manous</span><span class="cs">Indiana</span></div>
+    <div class="college-item"><span class="cn">Lou Carbonare</span><span class="cs">Trinidad J.C. / Phillips (Okla.)</span></div>
+    <div class="college-item"><span class="cn">Ken Mahala</span><span class="cs">Vincennes</span></div>
+    <div class="college-item"><span class="cn">Lew Hansen</span><span class="cs">Olivet Nazarene</span></div>
+    <div class="college-item"><span class="cn">Gary Shutan</span><span class="cs">Indiana</span></div>
+    <div class="college-item"><span class="cn">Hal Morris</span><span class="cs">Michigan</span></div>
+    <div class="college-item"><span class="cn">Jim Magrames</span><span class="cs">Cent. Michigan / Valpo</span></div>
+  </div>
+
+  <div class="era-header">Bob Shinkan Era (1986–2013)</div>
+  <div class="college-grid">
+    <div class="college-item"><span class="cn">Ed Balon</span><span class="cs">Valparaiso</span></div>
+    <div class="college-item"><span class="cn">Tom Morey</span><span class="cs">Purdue</span></div>
+    <div class="college-item"><span class="cn">Bob Morris</span><span class="cs">Iowa</span></div>
+    <div class="college-item"><span class="cn">Jeff Kapp</span><span class="cs">Purdue</span></div>
+    <div class="college-item"><span class="cn">Mike Jewett</span><span class="cs">Butler</span></div>
+    <div class="college-item"><span class="cn">Ryan Kutansky</span><span class="cs">Valparaiso</span></div>
+    <div class="college-item"><span class="cn">Gregg Shutan</span><span class="cs">Indiana</span></div>
+    <div class="college-item"><span class="cn">Josh VanVessen</span><span class="cs">Parkland J.C.</span></div>
+    <div class="college-item"><span class="cn">John Rybicki</span><span class="cs">South Suburban</span></div>
+    <div class="college-item"><span class="cn">Mark Panozzo</span><span class="cs">California</span></div>
+    <div class="college-item"><span class="cn">Scott Shinkan</span><span class="cs">Wabash</span></div>
+    <div class="college-item"><span class="cn">Brian Wolotka</span><span class="cs">Butler / Valparaiso</span></div>
+    <div class="college-item"><span class="cn">Randy Wiancek</span><span class="cs">Parkland J.C.</span></div>
+    <div class="college-item"><span class="cn">Curt Sobolewski</span><span class="cs">Wabash</span></div>
+    <div class="college-item"><span class="cn">Jason Helbling</span><span class="cs">Indiana State / Purdue</span></div>
+    <div class="college-item"><span class="cn">Dave Luptak</span><span class="cs">Earlham</span></div>
+    <div class="college-item"><span class="cn">Jeff O'Connor</span><span class="cs">Valparaiso</span></div>
+    <div class="college-item"><span class="cn">Mike Mirabelli</span><span class="cs">Defiance</span></div>
+    <div class="college-item"><span class="cn">Elliott Gibbs</span><span class="cs">Valparaiso</span></div>
+    <div class="college-item"><span class="cn">Mike Rosen</span><span class="cs">Butler</span></div>
+    <div class="college-item"><span class="cn">Mike Baniak</span><span class="cs">Dayton</span></div>
+    <div class="college-item"><span class="cn">Aaron Cameron</span><span class="cs">Valparaiso</span></div>
+    <div class="college-item"><span class="cn">Mike Kalina</span><span class="cs">Northwestern</span></div>
+    <div class="college-item"><span class="cn">Jon Nourie</span><span class="cs">W. Michigan / SW Missouri St.</span></div>
+    <div class="college-item"><span class="cn">Kent Boomsma</span><span class="cs">Kansas Newman</span></div>
+    <div class="college-item"><span class="cn">Ross Petersen</span><span class="cs">Valparaiso</span></div>
+    <div class="college-item"><span class="cn">Kevin Kutansky</span><span class="cs">Valparaiso</span></div>
+    <div class="college-item"><span class="cn">Brandon Platt</span><span class="cs">Franklin</span></div>
+    <div class="college-item"><span class="cn">Andrew Bilse</span><span class="cs">Rose-Hulman</span></div>
+    <div class="college-item"><span class="cn">Paul Obszanski</span><span class="cs">So. Illinois / IU-PU Ft. Wayne</span></div>
+    <div class="college-item"><span class="cn">Adam Enright</span><span class="cs">Ancilla / U. of Southern Ind.</span></div>
+    <div class="college-item"><span class="cn">John Bugajski</span><span class="cs">Purdue North Central</span></div>
+    <div class="college-item"><span class="cn">Brett Keeler</span><span class="cs">S. Illinois Edwardsville</span></div>
+    <div class="college-item"><span class="cn">Mike Nowak</span><span class="cs">Wabash</span></div>
+    <div class="college-item"><span class="cn">Brian Ritz</span><span class="cs">Indiana</span></div>
+    <div class="college-item"><span class="cn">Pete Jurich</span><span class="cs">Truman State</span></div>
+    <div class="college-item"><span class="cn">Ryan Wilkinson</span><span class="cs">Toledo</span></div>
+    <div class="college-item"><span class="cn">Blake Platt</span><span class="cs">Johns Hopkins</span></div>
+    <div class="college-item"><span class="cn">Chris Slivka</span><span class="cs">Emory</span></div>
+    <div class="college-item"><span class="cn">Anthony Gomez</span><span class="cs">Vincennes</span></div>
+    <div class="college-item"><span class="cn">Mike Mueller</span><span class="cs">Purdue Calumet</span></div>
+    <div class="college-item"><span class="cn">Mike Poulos</span><span class="cs">Purdue Calumet</span></div>
+    <div class="college-item"><span class="cn">Craig Dedelow</span><span class="cs">Indiana</span></div>
+    <div class="college-item"><span class="cn">Mark Dye</span><span class="cs">Earlham</span></div>
+    <div class="college-item"><span class="cn">T.J. Hecimovich</span><span class="cs">North Central College</span></div>
+    <div class="college-item"><span class="cn">Pat Kozlowski</span><span class="cs">Purdue Calumet</span></div>
+    <div class="college-item"><span class="cn">Jim Hinkleman</span><span class="cs">Triton</span></div>
+    <div class="college-item"><span class="cn">Scott Jerge</span><span class="cs">Valparaiso</span></div>
+  </div>
+
+</div>
+
+<script>
+function showTab(id) {
+  document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+  document.getElementById('tab-' + id).classList.add('active');
+  event.currentTarget.classList.add('active');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+</script>
+
+</body>
+</html>
