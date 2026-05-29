@@ -483,13 +483,13 @@
 </div>
 
 <nav class="tab-bar">
-  <button class="tab-btn active" onclick="showTab('team')">Team Records</button>
-  <button class="tab-btn" onclick="showTab('hitting')">Individual Hitting</button>
-  <button class="tab-btn" onclick="showTab('pitching')">Pitching</button>
-  <button class="tab-btn" onclick="showTab('400club')">The .400 Club</button>
-  <button class="tab-btn" onclick="showTab('honors')">Honors & Awards</button>
-  <button class="tab-btn" onclick="showTab('ybyyear')">Year by Year</button>
-  <button class="tab-btn" onclick="showTab('college')">College Players</button>
+  <button class="tab-btn active" onclick="showTab(this,'team')">Team Records</button>
+  <button class="tab-btn" onclick="showTab(this,'hitting')">Individual Hitting</button>
+  <button class="tab-btn" onclick="showTab(this,'pitching')">Pitching</button>
+  <button class="tab-btn" onclick="showTab(this,'400club')">The .400 Club</button>
+  <button class="tab-btn" onclick="showTab(this,'honors')">Honors & Awards</button>
+  <button class="tab-btn" onclick="showTab(this,'ybyyear')">Year by Year</button>
+  <button class="tab-btn" onclick="showTab(this,'college')">College Players</button>
 </nav>
 
 <!-- ===== TAB: TEAM RECORDS ===== -->
@@ -1266,11 +1266,11 @@
 </div>
 
 <script>
-function showTab(id) {
+function showTab(btn, id) {
   document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
   document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
   document.getElementById('tab-' + id).classList.add('active');
-  event.currentTarget.classList.add('active');
+  btn.classList.add('active');
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 </script>
