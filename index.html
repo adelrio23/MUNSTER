@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Munster Baseball — Record Book</title>
+<title>Munster Mustangs Baseball — Record Book</title>
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -28,53 +28,78 @@
 
   /* HEADER */
   header {
-    background: var(--navy);
-    border-bottom: 4px solid var(--gold);
-    padding: 32px 24px 24px;
+    background: #111;
+    border-bottom: 5px solid #cc0000;
+    padding: 40px 24px 32px;
     text-align: center;
-  }
-  .header-badge {
-    display: inline-block;
-    border: 3px solid var(--gold);
-    padding: 16px 40px;
     position: relative;
+    overflow: hidden;
   }
-  .header-badge::before, .header-badge::after {
-    content: '';
-    display: block;
-    height: 1px;
-    background: var(--gold);
-    margin: 6px 0;
-    opacity: 0.5;
+  header::before {
+    content: 'M';
+    position: absolute;
+    font-size: 400px;
+    font-family: 'Arial Black', sans-serif;
+    font-weight: 900;
+    color: rgba(255,255,255,0.03);
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    line-height: 1;
+    pointer-events: none;
   }
-  header .school {
+  .header-inner { position: relative; z-index: 1; }
+  .header-location {
     font-size: 11px;
-    letter-spacing: 5px;
+    letter-spacing: 6px;
     text-transform: uppercase;
-    color: var(--gold);
+    color: rgba(255,255,255,0.45);
     font-family: 'Arial', sans-serif;
     font-weight: 700;
+    margin-bottom: 10px;
   }
-  header h1 {
-    font-size: clamp(28px, 5vw, 52px);
-    color: var(--white);
-    letter-spacing: 3px;
+  .header-wordmark {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0;
+  }
+  .hw-munster {
+    font-size: clamp(42px, 9vw, 88px);
+    font-family: 'Arial Black', 'Impact', sans-serif;
+    font-weight: 900;
+    color: #ffffff;
     text-transform: uppercase;
+    letter-spacing: 6px;
     line-height: 1;
-    margin: 8px 0 6px;
-    font-style: italic;
+  }
+  .hw-mustangs {
+    font-size: clamp(22px, 4.5vw, 44px);
+    font-family: 'Arial Black', 'Impact', sans-serif;
+    font-weight: 900;
+    color: #cc0000;
+    text-transform: uppercase;
+    letter-spacing: 10px;
+    line-height: 1;
+    margin-top: 4px;
+  }
+  .header-divider {
+    width: 80px;
+    height: 3px;
+    background: #cc0000;
+    margin: 14px auto;
   }
   header .subtitle {
     font-size: 12px;
-    letter-spacing: 4px;
-    color: var(--gold);
+    letter-spacing: 5px;
+    color: rgba(255,255,255,0.5);
     text-transform: uppercase;
     font-family: 'Arial', sans-serif;
   }
   .header-meta {
-    margin-top: 14px;
-    color: rgba(255,255,255,0.5);
-    font-size: 11px;
+    margin-top: 12px;
+    color: rgba(255,255,255,0.3);
+    font-size: 10px;
     letter-spacing: 2px;
     font-family: 'Arial', sans-serif;
     text-transform: uppercase;
@@ -436,12 +461,16 @@
 <body>
 
 <header>
-  <div class="header-badge">
-    <div class="school">Munster High School &mdash; Munster, Indiana</div>
-    <h1>Mustang Baseball</h1>
-    <div class="subtitle">Record Book</div>
+  <div class="header-inner">
+    <div class="header-location">Munster, Indiana</div>
+    <div class="header-wordmark">
+      <div class="hw-munster">Munster</div>
+      <div class="hw-mustangs">Mustangs</div>
+    </div>
+    <div class="header-divider"></div>
+    <div class="subtitle">Baseball &nbsp;&mdash;&nbsp; Record Book</div>
+    <div class="header-meta">Updated Through 2013 &nbsp;&bull;&nbsp; Est. 1965</div>
   </div>
-  <div class="header-meta">Updated Through 2013 &nbsp;&bull;&nbsp; Est. 1965</div>
 </header>
 
 <div class="banner-stats">
